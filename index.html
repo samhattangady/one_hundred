@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>One Hundred</title>
+    <meta name="description" content="Write a hundred words">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <div class="header">One Hundred</div>
+    <div class="flex">
+      <div contenteditable="true" id="content" class="main_input" spellcheck=false>some things
+        <span id="red_text" class='extra'> lets put some words here also.</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const limit = 100;
+
+  const handleInput = (e) => {
+    const content = stripHtml(document.getElementById("content").innerText);
+    const offset = getCaretCharOffset();
+    const words = content.split(' ');
+    // TODO (11 May 2022 sam): We need to handle multiple spaces here, and not treat those as
+    // words. But also not delete them...
+    if (words.length > limit) {
+      console.log(words);
+      let updated = '';
+      for (let i = 0; i < words.length; i++) {
+        if (i == limit) {
+          updated += "<span id=\"red_text\" class=\"extra\">";
+        }
+        updated += words[i];
+        updated += ' '
+      }
+      updated += "</span>";
+      document.getElementById("content").innerHTML = updated;
+      setCaretCharOffset(offset);
+    }
+  }
+
+  const stripHtml = (html) => {
+    let doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+  }
+
+  const getCaretCharOffset = () => {
+    let el = document.getElementById("content");
+    let caretOffset = 0;
+    let range = window.getSelection().getRangeAt(0);
+    let preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(el);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+    caretOffset = preCaretRange.toString().length;
+    return caretOffset;
+  }
+
+  const setCaretCharOffset = (offset) => {
+    let el = document.getElementById("content");
+    let sel = window.getSelection()
+    let range = document.createRange()
+    let node = el.firstChild;
+    range.selectNodeContents(node);
+    if (range.toString().length >= offset) {
+      range.setStart(node, offset);
+    } else {
+      offset -= range.toString().length;
+      node = document.getElementById("red_text").firstChild;
+      range.setStart(node, offset);
+    }
+    range.collapse(true)
+    sel.removeAllRanges()
+    sel.addRange(range)
+  }
+
+  document.getElementById("content").addEventListener("input", handleInput);
+  </script>
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: #cccccc;
+      height: 100vh;
+      width: 100vw;
+    }
+    #app {
+      height: 100%;
+      width: 100%;
+    }
+    .flex {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .header {
+      position: absolute;
+      left: 50vw;
+      top: 12vh;
+      transform: translate(-50%,-50%);
+      font-family: 'Hind Siliguri', sans-serif;
+      font-size: 2.5em;
+      font-weight: 700;
+      color: #b9b9b9;
+    }
+    .main_input {
+      background-color: #c8c8c8;
+      font-size: 1.5em;
+      height: 50%;
+      width: 50%;
+      max-width: 50vh;
+      font-family: 'Hind Siliguri', sans-serif;
+      border: none;
+      resize: none;
+      border-radius: 16px;
+      color: #888888;
+      padding: 0.4em;
+    }
+    .main_input:focus {
+      border: none !important;
+      outline: none !important;
+    }
+    .extra {
+      color: #aa8888;
+    }
+  </style>
+</body>
+</html>
