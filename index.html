@@ -12,11 +12,13 @@
 <body>
   <div id="app">
     <div class="header">One Hundred</div>
+    <div id="word_count" class="counter">0</div>
     <div class="flex">
-      <div contenteditable="true" id="content" class="main_input" spellcheck=false>some things
-        <span id="red_text" class='extra'> lets put some words here also.</span>
+      <div contenteditable="true" id="content" class="main_input" spellcheck=false>
+        <span id="red_text" class='extra'></span>
       </div>
     </div>
+    <button id="save_button" class="saver" hidden>Save</button>
   </div>
 
   <script>
@@ -26,10 +28,11 @@
     const content = stripHtml(document.getElementById("content").innerText);
     const offset = getCaretCharOffset();
     const words = content.split(' ');
+    document.getElementById("word_count").innerText = ''+words.length;
+    document.getElementById("save_button").hidden = words.length != limit;
     // TODO (11 May 2022 sam): We need to handle multiple spaces here, and not treat those as
     // words. But also not delete them...
     if (words.length > limit) {
-      console.log(words);
       let updated = '';
       for (let i = 0; i < words.length; i++) {
         if (i == limit) {
@@ -78,7 +81,12 @@
     sel.addRange(range)
   }
 
+  const saveContent = () => {
+    console.log("we must save this content");
+  }
+
   document.getElementById("content").addEventListener("input", handleInput);
+  document.getElementById("save_button").addEventListener("click", saveContent);
   </script>
 
   <style>
@@ -110,6 +118,31 @@
       font-size: 2.5em;
       font-weight: 700;
       color: #b9b9b9;
+    }
+    .counter {
+      position: absolute;
+      left: 50vw;
+      top: 18vh;
+      transform: translate(-50%,-50%);
+      font-family: 'Hind Siliguri', sans-serif;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #b9b9b9;
+    }
+    .saver {
+      position: absolute;
+      left: 50vw;
+      bottom: 10vh;
+      width: 200px;
+      padding: 5px;
+      transform: translate(-50%,-50%);
+      font-family: 'Hind Siliguri', sans-serif;
+      font-size: 1.5em;
+      font-weight: 700;
+      background-color: #696969;
+      color: #c9c9c9;
+      border: none;
+      border-radius: 5px;
     }
     .main_input {
       background-color: #c8c8c8;
